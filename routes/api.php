@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('ussd',[UssdController::class, "index"]);
+Route::post('ussd-input',[UssdController::class, "input"]);
