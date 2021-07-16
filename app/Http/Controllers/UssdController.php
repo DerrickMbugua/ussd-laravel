@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Twilio\Rest\Client;
 
 class UssdController extends Controller
 {
@@ -19,7 +20,8 @@ if ($text == "") {
     // This is the first request. Note how we start the response with CON
     $response  = "CON What would you want to check \n";
     $response .= "1. My Account \n";
-    $response .= "2. My phone number";
+    $response .= "2. My phone number\n";
+    $response .= "3. Go to whatsapp chatbot";
 
 } else if ($text == "1") {
     // Business logic for first level response
@@ -37,6 +39,19 @@ if ($text == "") {
 
     // This is a terminal request. Note how we start the response with END
     $response = "END Your account number is ".$accountNumber;
+} else if($text == "3"){
+    $response = "END Thank you joining our whatsapp chatbot.\n";
+    $sid = "AC38a6c200dee219b0f026f681557a7e82";
+$token = "319fbb80dc9ff93912260dafbe78ab46";
+$twilio = new Client($sid, $token);
+
+$message = $twilio->messages
+                  ->create("whatsapp:+254715153806", // to
+                           [
+                               "from" => "whatsapp:+14155238886",
+                               "body" => "Hello there!"
+                           ]
+                  );
 }
 
 // Echo the response back to the API
@@ -56,9 +71,9 @@ echo $response;
         $level = count($ussd_string_exploded);
         if ($text == "") {
             // first response when a user dials our ussd code
-            $response  = "CON Welcome to Online Classes at Primes Devs \n";
+            $response  = "CON Welcome to Online Classes at PrimesDevs \n";
             $response .= "1. Register \n";
-            $response .= "2. About HLAB";
+            $response .= "2. About PrimesDev";
         }
         elseif ($text == "1") {
             // when user respond with option one to register
@@ -78,7 +93,7 @@ echo $response;
         }
         elseif ($ussd_string_exploded[0] == 1 && $ussd_string_exploded[1] == 1 && $level == 5) {
             // save data in the database
-            $response = "END Your data has been captured successfully! Thank you for registering for Django online classes at PrimeDev.";
+            $response = "END Your data has been captured successfully! Thank you for registering for Django online classes at PrimesDev.";
         }
         elseif ($text == "1*2") {
             // when use response with option Laravel
@@ -96,7 +111,7 @@ echo $response;
         }
         elseif ($text == "2") {
             // Our response a user respond with input 2 from our first level
-            $response = "END At HLAB we try to find a good balance between theory and practical!.";
+            $response = "END At PrimesDev we try to find a good balance between theory and practical!.";
         }
         // send your response back to the API
         header('Content-type: text/plain');
